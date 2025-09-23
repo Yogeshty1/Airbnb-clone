@@ -1,0 +1,5 @@
+{
+  "watch": ["*.*"],
+  "ext": "js,ejs,css",
+  "ignore": ["node_modules/*"]
+}
