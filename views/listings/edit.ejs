@@ -1,36 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wanderlust</title>
-  </head>
+<% layout('layouts/boilerplate') -%>
+
   <body>
-    <h3>Edit your Listing</h3>
-    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
-      <input name="listing[title]" value="<%= listing.title %>" type="text" />
-      <br /><br />
-      <textarea name="listing[description]">
-<%= listing.description %></textarea
-      >
-      <br /><br />
-      <input name="listing[image]" value="<%= listing.image %>" type="text" />
-      <br /><br />
-      <input name="listing[price]" value="<%= listing.price %>" type="number" />
-      <br /><br />
-      <input
-        name="listing[country]"
-        value="<%= listing.country %>"
-        type="text"
-      />
-      <br /><br />
-      <input
-        name="listing[location]"
-        value="<%= listing.location %>"
-        type="text"
-      />
-      <br /><br />
-      <button>Edit</button>
-    </form>
+    <div class="row ">
+      <div class="col-5 offset-3">
+        <br><br>
+        <h3>Edit Listing</h3>
+        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation" novalidate>
+
+          <div class="mb-3">
+            <lable for="title" class="form-label">Title</lable>
+            <input
+              name="listing[title]"
+              type="text"
+              class="form-control"
+              value="<%= listing.title %>"
+              required
+            />
+            <div class="invalid-feedback">
+              Please provide a valid title.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <lable for="description" class="form-label">Description</lable>
+            <textarea
+              name="listing[description]"
+              class="form-control"
+              required
+            ><%= listing.description %></textarea>
+            <div class="invalid-feedback">
+              Please provide a valid description.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <lable for="image" class="form-label">Image Link</lable>
+            <input
+              name="listing[image]"
+              type="text"
+              class="form-control"
+              value="<%= listing.image %>"
+              required
+            />
+            <div class="invalid-feedback">
+              Please provide a valid image URL.
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="mb-3 col-md-4">
+              <lable for="price" class="form-label">Price</lable>
+              <input
+                name="listing[price]"
+                type="number"
+                class="form-control"
+                value="<%= listing.price %>"
+                required
+              />
+              <div class="invalid-feedback">
+                Please provide a valid price.
+              </div>
+            </div>
+            <div class="mb-3 col-md-8">
+              <lable for="location" class="form-label">Location</lable>
+              <input
+                name="listing[location]"
+                type="text"
+                class="form-control"
+                value="<%= listing.location %>"
+                required
+              />
+              <div class="invalid-feedback">
+                Please provide a valid location.
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <lable for="country" class="form-label">Country</lable>
+            <input
+              name="listing[country]"
+              type="text"
+              class="form-control"
+              value="<%= listing.country %>"
+              required
+            />
+                <div class="invalid-feedback">
+      Please provide a valid country.
+    </div>
+
+          </div>
+
+          <button class="btn btn-dark add-btn">Update</button>
+        </form>
+        <br><br>
+      </div>
+    </div>
   </body>
-</html>

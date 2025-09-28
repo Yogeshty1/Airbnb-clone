@@ -2,27 +2,25 @@
   "name": "majorproject",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-<<<<<<< HEAD
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "audit": "npm audit fix"
-=======
-    "test": "echo \"Error: no test specified\" && exit 1"
->>>>>>> 59e553cfc8d0195a1ae85d49435cad6265e2f87a
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "ejs": "^3.1.10",
-<<<<<<< HEAD
     "ejs-mate": "^4.0.0",
-=======
->>>>>>> 59e553cfc8d0195a1ae85d49435cad6265e2f87a
     "express": "^4.21.2",
+    "joi": "^18.0.1",
     "method-override": "^3.0.0",
-    "mongoose": "^7.8.7",
+    "mongoose": "^7.8.7"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.10"
   }
 }
