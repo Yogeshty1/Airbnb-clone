@@ -9,7 +9,7 @@
   <% layout('layouts/boilerplate') -%>
 <div class="col-8 offset-2">
   
-    <h3>Listing Details :</h3>
+    <h3><%= listing.title %> </h3>
     </body>
     </div>
     <div class="card col-6 offset-3 show-card">
@@ -17,7 +17,6 @@
   <img src="<%= listing.image %>" class="card-img-top show-img" alt="listing_image">
   <div class="card-body">
     <p class="card-text">
-      <b><%= listing.title %> </b> 
       <%= listing.description %><br>
       &#8377; <%= listing.price.toLocaleString("en-IN") %><br>
       <%= listing.location %><br>
@@ -33,4 +32,35 @@
     </form>
     </div>
 <!-- </html> -->
-</div>
+ <hr> <br>
+  <div class="col-8 offset-3">
+   <h4> Leave a review</h4>
+   <form method="POST" action="/listings/<%= listing._id %>/reviews" novalidate class="needs-validation">
+     <div class="mb-3">
+       <label for="rating" class="form-label">Rating: <span id="ratingValue" class="badge bg-primary">3</span></label>
+       <div class="d-flex align-items-center justify-content-center">
+         <div class="position-relative" style="width: 50%;">
+           <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range w-100" value="3">
+           <div class="d-flex justify-content-between position-absolute w-100" style="top: 20px;">
+             <span class="small text-muted">1</span>
+             <span class="small text-muted">2</span>
+             <span class="small text-muted">3</span>
+             <span class="small text-muted">4</span>
+             <span class="small text-muted">5</span>
+           </div>
+         </div>
+       </div>
+     </div>
+     <div class="mb-3">
+      <label for="comment" class="form-label">Comments</label>
+      <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+      <div class="invalid-feedback">Please enter a comment.</div>
+    </div>
+     <button type="submit" class="btn btn-primary">Submit</button>
+   </form>
+ </div>
+<script>
+document.getElementById('rating').addEventListener('input', function() {
+  document.getElementById('ratingValue').textContent = this.value;
+});
+</script>

@@ -7,7 +7,8 @@ const methodOverride = require("method-override");
 const ejsMate=require("ejs-mate");
 const wrapAsync =require("./utils/wrapAsync.js");
 const ExpressError =require("./utils/ExpressError.js");
-const {listingschema} = require("./schema.js");
+const Review  = require("./models/review.js");
+const {listingschema , reviewSchema} = require("./schema.js");
 
 
 
@@ -36,10 +37,23 @@ app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
 
+//validate listing
 const validateListing =(req,res,next) =>{
   let {error} = listingschema.validate(req.body);
   if (error) {
-    throw new ExpressError(400,errMsg);
+    const errMsg = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(400, errMsg);
+  }else{
+    next();
+  }
+};
+
+//validate review
+const validateReview =(req,res,next) =>{
+  let {error} = reviewSchema.validate(req.body);
+  if (error) {
+    const errMsg = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(400, errMsg);
   }else{
     next();
   }
@@ -86,14 +100,32 @@ app.put("/listings/:id", wrapAsync(async (req, res) => {
 
 //Delete Route
 app.delete("/listings/:id",wrapAsync( async (req, res , next) => {
- 
- let { id } = req.params;
+
+let { id } = req.params;
   let deletedListing = await Listing.findByIdAndDelete(id);
   console.log(deletedListing);
   res.redirect("/listings");
- }
- 
+}
+
 ));
+//reviews
+//post route
+
+app.post("/listings/:id/reviews" ,validateReview, wrapAsync(async(req,res)=>{
+let listing = await Listing.findById(req.params.id);
+let newReview = new Review(req.body.review);
+
+listing.reviews.push(newReview);
+
+await newReview.save();
+await listing.save();
+
+console.log("new review saved");
+return res.redirect(`/listings/${listing._id}`);
+}));
+
+
+
 
 // app.get("/testListing", async (req, res) => {
 //   let sampleListing = new Listing({
