@@ -28,9 +28,15 @@ router.get("/new", (req, res) => {
 });
 
 //Show Route
-router.get("/:id", wrapAsync (async (req, res) => {
-  let { id } = req.params;
+router.get("/:id", wrapAsync (async (req, res, next) => {
+  const { id } = req.params;
   const listing = await Listing.findById(id).populate("reviews");
+  
+  if (!listing) {
+    req.flash("error", "Listing not found!");
+    return res.redirect("/listings");
+  }
+  
   res.render("listings/show.ejs", { listing });
 }));
 
