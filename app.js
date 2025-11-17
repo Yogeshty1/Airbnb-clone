@@ -10,10 +10,12 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
-
+//const userRouter = require("./routes/user");
 // Import routes
 const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
+const userRouter = require("./routes/user");
+
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/Wanderlust";
 
@@ -76,7 +78,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
-
+app.use("/", userRouter);
 // 404 handler
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page not found!"));
