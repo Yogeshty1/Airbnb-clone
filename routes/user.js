@@ -4,7 +4,7 @@ const User = require("../models/user");
 const wrapAsync = require("../utils/wrapAsync");
 
 router.get("/signup", (req, res) => {
-    res.send("signup");
+    res.render("users/signup");
  //   res.render("register");
 });
 
