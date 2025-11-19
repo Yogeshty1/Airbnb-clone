@@ -1,3 +1,6 @@
+// Suppress specific deprecation warning
+process.removeAllListeners('warning');
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
