@@ -16,6 +16,7 @@
   <img src="<%= listing.image %>" class="card-img-top show-img" alt="listing_image">
   <div class="card-body">
     <p class="card-text">
+      <b>Owner:</b> <%= listing.owner ? listing.owner.username : "Yogesh" %><br>
       <%= listing.description %><br>
       &#8377; <%= listing.price.toLocaleString("en-IN") %><br>
       <%= listing.location %><br>
@@ -68,7 +69,7 @@
     <div class="col-12 col-md-6">
       <div class ="card review-card">
         <div class="card-body">
-          <h5 class="card-title">Jane Doe</h5>
+          <h5 class="card-title"><%= review.owner ? review.owner.username : "Anonymous" %></h5>
           <p class="card-text mb-0">
             <%= review.comment %>
             <span class="ms-1 badge bg-primary"><%= review.rating %>Star</span>

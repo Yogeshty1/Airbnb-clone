@@ -21,6 +21,7 @@ const validateReview =(req,res,next) =>{
 router.post("/" , isLoggedIn,validateReview, wrapAsync(async(req,res,next) => {
   let listing = await Listing.findById(req.params.id);
   let newReview = new Review(req.body.review);
+  newReview.owner = req.user._id;
 
   listing.reviews.push(newReview);
 

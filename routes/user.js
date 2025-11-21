@@ -42,7 +42,9 @@ router.post("/login", saveReturnTo,
     }), 
     async(req, res) => {
         req.flash("success", "Welcome back!");
-        res.redirect(res.locals.returnTo || "/listings");
+        // res.locals.returnTo will contain the URL saved by isLoggedIn middleware
+        const redirectUrl = res.locals.returnTo || "/listings"; 
+        res.redirect(redirectUrl);
     }
 );
 

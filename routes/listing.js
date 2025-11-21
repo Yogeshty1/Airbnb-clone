@@ -31,7 +31,12 @@ router.get("/new", isLoggedIn, (req, res) => {
 //Show Route
 router.get("/:id", wrapAsync(async (req, res, next) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id).populate("reviews");
+  const listing = await Listing.findById(id).populate("reviews").populate("owner").populate({
+    path: "reviews",
+    populate: {
+      path: "owner"
+    }
+  });
 
   if (!listing) {
     req.flash("error", "Listing not found!");
@@ -44,6 +49,7 @@ router.get("/:id", wrapAsync(async (req, res, next) => {
 //Create Route - Protected
 router.post("/", isLoggedIn, validateListing, wrapAsync(async (req, res, next) => {
   const newListing = new Listing(req.body.listing);
+  newListing.owner = req.user._id;
   await newListing.save();
   req.flash("success", "Listing created successfully");
   res.redirect("/listings");
@@ -52,14 +58,14 @@ router.post("/", isLoggedIn, validateListing, wrapAsync(async (req, res, next) =
 //Edit Route - Protected
 router.get("/:id/edit", isLoggedIn, wrapAsync(async (req, res, next) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate("owner");
   res.render("listings/edit.ejs", { listing });
 }));
 
 //Update Route - Protected
 router.put("/:id", isLoggedIn, validateListing, wrapAsync(async (req, res) => {
   let { id } = req.params;
-  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+  await Listing.findByIdAndUpdate(id, { ...req.body.listing, owner: req.user._id });
   req.flash("success", "Listing updated successfully!");
   res.redirect(`/listings/${id}`);
 }));
@@ -67,7 +73,7 @@ router.put("/:id", isLoggedIn, validateListing, wrapAsync(async (req, res) => {
 //Delete Route - Protected
 router.delete("/:id", isLoggedIn, wrapAsync(async (req, res, next) => {
   let { id } = req.params;
-  let deletedListing = await Listing.findByIdAndDelete(id);
+  let deletedListing = await Listing.findByIdAndDelete(id, { owner: req.user._id });
 
   if (!deletedListing) {
     req.flash("error", "Listing not found!");
