@@ -120,6 +120,17 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error", { err });
 });
 
+// Add this before your 404 handler
+app.get('/test-listings', async (req, res) => {
+    try {
+        const listings = await Listing.find({});
+        res.json(listings);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching listings');
+    }
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
