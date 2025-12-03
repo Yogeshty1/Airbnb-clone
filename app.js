@@ -16,7 +16,7 @@ const User = require("./models/user");
 const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
-const Listing = require("./models/listing");  
+const Listing = require("./models/listing");
 
 // Enable debug mode for development
 if (process.env.NODE_ENV !== 'production') {
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // MongoDB Connection
-async function main() {
+async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/Wanderlust", {
       useNewUrlParser: true,
@@ -32,10 +32,14 @@ async function main() {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
-    console.log('✅ Connected to MongoDB');
+    console.log('Connected to MongoDB');
+    return true;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
-    process.exit(1);
+    console.error(' MongoDB connection error:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+    return false;
   }
 }
 
@@ -54,15 +58,20 @@ mongoose.connection.on('disconnected', () => {
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  await mongoose.connection.close();
-  console.log('Mongoose connection closed through app termination');
-  process.exit(0);
+  try {
+    await mongoose.connection.close();
+    console.log('Mongoose connection closed through app termination');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during shutdown:', err);
+    process.exit(1);
+  }
 });
 
 // Initialize connection
-main().catch(console.error);
+connectDB().catch(console.error);
 
-// Rest of your app configuration
+// Middleware
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -99,6 +108,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check endpoint
+app.get('/health', async (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.json({
+    status: 'ok',
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
@@ -114,9 +133,52 @@ app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
+// Test endpoint with improved error handling
+app.get('/test-listings', async (req, res, next) => {
+  try {
+    // Check database connection
+    if (mongoose.connection.readyState !== 1) {
+      const connected = await connectDB();
+      if (!connected) {
+        throw new Error('Database connection failed');
+      }
+    }
+
+    console.log('Attempting to fetch listings...');
+    const listings = await Listing.find({}).limit(10).lean();
+    console.log('Listings found:', listings.length);
+    
+    if (!listings || listings.length === 0) {
+      return res.status(404).json({ 
+        message: 'No listings found',
+        count: 0
+      });
+    }
+    
+    res.json({
+      count: listings.length,
+      listings: listings
+    });
+  } catch (err) {
+    console.error('Error in /test-listings:', {
+      message: err.message,
+      name: err.name,
+      stack: err.stack
+    });
+    next(err);
+  }
+});
 
 // Error handler
 app.use((err, req, res, next) => {
+  if (err.name === 'MongoNetworkError' || err.name === 'MongooseServerSelectionError') {
+    console.error('Database connection error:', err);
+    return res.status(503).json({ 
+      error: 'Database connection error',
+      message: 'Unable to connect to the database. Please try again later.'
+    });
+  }
+  
   const { statusCode = 500, message = "Oh No, Something Went Wrong!" } = err;
   res.status(statusCode).render("error", { 
     error: {
@@ -124,21 +186,6 @@ app.use((err, req, res, next) => {
       message: message
     }
   });
-});
-
-// test endpoint 
-app.get('/test-listings', async (req, res, next) => {
-    try {
-        console.log('Attempting to fetch listings...');
-        const listings = await Listing.find({});
-        console.log('Listings found:', listings.length);
-        if (!listings || listings.length === 0) {
-            return res.status(404).json({ message: 'No listings found' });
-        }
-        res.json(listings);
-    } catch (err) {
-        next(err); // This will be caught by our error handler
-    }
 });
 
 const port = process.env.PORT || 3000;
