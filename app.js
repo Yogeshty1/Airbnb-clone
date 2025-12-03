@@ -140,7 +140,9 @@ app.get('/test-listings', async (req, res, next) => {
     if (mongoose.connection.readyState !== 1) {
       const connected = await connectDB();
       if (!connected) {
-        throw new Error('Database connection failed');
+        const error = new Error('Database connection failed');
+        error.statusCode = 503;
+        return next(error);
       }
     }
 
@@ -149,10 +151,9 @@ app.get('/test-listings', async (req, res, next) => {
     console.log('Listings found:', listings.length);
     
     if (!listings || listings.length === 0) {
-      return res.status(404).json({ 
-        message: 'No listings found',
-        count: 0
-      });
+      const error = new Error('No listings found');
+      error.statusCode = 404;
+      return next(error);
     }
     
     res.json({
@@ -165,6 +166,7 @@ app.get('/test-listings', async (req, res, next) => {
       name: err.name,
       stack: err.stack
     });
+    err.statusCode = err.statusCode || 500;
     next(err);
   }
 });
