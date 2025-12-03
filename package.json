@@ -1,19 +1,16 @@
 {
-  "name": "majorproject",
+  "name": "wanderlust",
   "version": "1.0.0",
-  "description": "",
+  "description": "A travel booking application built with Node.js, Express, and MongoDB",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "audit": "npm audit fix",
-    "build": "echo 'No build step required' && exit 0",
-    "vercel-build": "npm install && npm run build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["travel", "booking", "nodejs", "express", "mongodb"],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "connect-flash": "^0.1.1",
     "dotenv": "^17.2.3",

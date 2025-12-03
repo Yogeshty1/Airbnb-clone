@@ -4,7 +4,6 @@ const User = require("../models/user");
 const wrapAsync = require("../utils/wrapAsync");
 const passport = require("passport");
 const { saveReturnTo } = require("../middleware");
-// const { isLoggedIn } = require("../middleware");
 
 router.get("/signup", (req, res) => {
     res.render("users/signup");
@@ -57,13 +56,5 @@ router.get("/logout", (req, res) => {
     });
 });
 
-//logout route
-router.get("/logout", (req, res , next) => {
-    req.logout(function(err) {
-        if (err) { return next(err); }
-        req.flash("success", "Goodbye!");
-        res.redirect("/listings");
-    });
-});
 
 module.exports = router;
