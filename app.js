@@ -121,14 +121,23 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error", { err });
 });
 
-// Add this before your 404 handler
+// test endpoint 
 app.get('/test-listings', async (req, res) => {
     try {
+        console.log('Attempting to fetch listings...');
         const listings = await Listing.find({});
+        console.log('Listings found:', listings.length);
         res.json(listings);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error fetching listings');
+        console.error('Error in /test-listings:', {
+            message: err.message,
+            stack: err.stack,
+            name: err.name
+        });
+        res.status(500).json({
+            error: 'Error fetching listings',
+            details: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
+        });
     }
 });
 
