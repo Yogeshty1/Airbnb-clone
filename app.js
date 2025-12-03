@@ -16,6 +16,7 @@ const User = require("./models/user");
 const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
+const Listing = require("./models/listing");  
 
 // Enable debug mode for development
 if (process.env.NODE_ENV !== 'production') {
