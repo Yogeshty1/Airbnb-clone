@@ -114,30 +114,30 @@ app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
+
 // Error handler
 app.use((err, req, res, next) => {
-  const { statusCode = 500 } = err;
-  if (!err.message) err.message = "Oh No, Something Went Wrong!";
-  res.status(statusCode).render("error", { err });
+  const { statusCode = 500, message = "Oh No, Something Went Wrong!" } = err;
+  res.status(statusCode).render("error", { 
+    error: {
+      status: statusCode,
+      message: message
+    }
+  });
 });
 
 // test endpoint 
-app.get('/test-listings', async (req, res) => {
+app.get('/test-listings', async (req, res, next) => {
     try {
         console.log('Attempting to fetch listings...');
         const listings = await Listing.find({});
         console.log('Listings found:', listings.length);
+        if (!listings || listings.length === 0) {
+            return res.status(404).json({ message: 'No listings found' });
+        }
         res.json(listings);
     } catch (err) {
-        console.error('Error in /test-listings:', {
-            message: err.message,
-            stack: err.stack,
-            name: err.name
-        });
-        res.status(500).json({
-            error: 'Error fetching listings',
-            details: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
-        });
+        next(err); // This will be caught by our error handler
     }
 });
 
