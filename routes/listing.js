@@ -23,6 +23,7 @@ router.get("/", wrapAsync(async (req, res) => {
   res.render("listings/index.ejs", { allListings });
 }));
 
+
 //New Route - Protected
 router.get("/new", isLoggedIn, (req, res) => {
   res.render("listings/new.ejs");

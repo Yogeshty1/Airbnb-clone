@@ -12,7 +12,7 @@ module.exports.isLoggedIn = (req, res, next) => {
         return res.redirect("/login");
     }
     next();
-};
+}; 
 
 // saveReturnTo looks correct and should now function properly:
 module.exports.saveReturnTo = (req, res, next) => {
